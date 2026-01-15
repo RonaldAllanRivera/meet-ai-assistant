@@ -4,6 +4,8 @@ const DEBUG = false;
 const CAPTION_BUFFER_LIMIT = 6;
 const OBSERVER_DEBOUNCE_MS = 250;
 const RESCAN_INTERVAL_MS = 2000;
+const QUESTION_COOLDOWN_MS = 5000;
+const MIN_QUESTION_LENGTH = 6;
 
 const CAPTION_SELECTORS = [
   '[aria-live="polite"]',
@@ -18,6 +20,8 @@ type CaptionState = {
   buffer: string[];
   lastLine: string;
   processTimer: number | null;
+  lastQuestionAt: number;
+  lastQuestion: string;
 };
 
 const state: CaptionState = {
@@ -26,7 +30,9 @@ const state: CaptionState = {
   bodyObserver: null,
   buffer: [],
   lastLine: "",
-  processTimer: null
+  processTimer: null,
+  lastQuestionAt: 0,
+  lastQuestion: ""
 };
 
 function log(...args: unknown[]): void {
@@ -108,7 +114,57 @@ function processCaptions(): void {
       state.buffer.shift();
     }
     log("Caption line:", line, "Buffer:", state.buffer);
+    maybeDetectQuestion(line);
   }
+}
+
+function maybeDetectQuestion(line: string): void {
+  if (!isLikelyQuestion(line)) return;
+
+  const now = Date.now();
+  if (now - state.lastQuestionAt < QUESTION_COOLDOWN_MS) return;
+
+  const normalized = normalizeText(line).toLowerCase();
+  if (normalized === state.lastQuestion) return;
+
+  const context = state.buffer.slice(-3);
+  const payload = {
+    question: line,
+    context
+  };
+
+  state.lastQuestionAt = now;
+  state.lastQuestion = normalized;
+
+  log("Question detected:", payload);
+  window.dispatchEvent(new CustomEvent("meet-assistant-question", { detail: payload }));
+}
+
+function isLikelyQuestion(line: string): boolean {
+  const normalized = normalizeText(line).toLowerCase();
+  if (normalized.length < MIN_QUESTION_LENGTH) return false;
+
+  if (normalized.endsWith("?")) return true;
+
+  const starters = [
+    "what",
+    "why",
+    "how",
+    "when",
+    "where",
+    "who",
+    "which",
+    "can you",
+    "do you",
+    "does",
+    "is",
+    "are",
+    "tell me",
+    "define",
+    "explain"
+  ];
+
+  return starters.some((starter) => normalized.startsWith(starter + " "));
 }
 
 function attachObserver(root: HTMLElement): void {
