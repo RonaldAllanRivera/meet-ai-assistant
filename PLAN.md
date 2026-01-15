@@ -67,12 +67,14 @@
 ---
 
 ## 🔹 PHASE 2 — Chrome Extension Core (Captions Reader)
-### ✅ Status: Completed
+### ✅ Status: Completed & Tested
 
-### Key responsibilities
-
-* Run automatically on `https://meet.google.com/*`
-* Read captions from DOM (no screenshots)
+### Goals
+* Read live captions from Google Meet DOM
+* Handle caption appearance/disappearance gracefully
+* Normalize text (remove timestamps, clean formatting)
+* Rolling buffer to avoid re-processing old captions
+* Emit clean caption events for Phase 3)
 * Be resilient to Meet UI changes
 
 ### Implementation tasks
@@ -289,6 +291,8 @@ Safety logic lives **before** the OpenAI call.
 
 ## 🔹 PHASE 11 — Deployment (MVP)
 
+### ✅ Status: Completed
+
 ### Recommendation
 
 Best MVP: Deploy the backend to **Vercel** (fastest path).
@@ -296,6 +300,14 @@ Best MVP: Deploy the backend to **Vercel** (fastest path).
 ### Rate limiting storage (optional)
 
 If you want reliable rate limiting across serverless instances, add **Upstash Redis** and use it as the shared store for rate limiting.
+
+### Local dev (Docker Desktop)
+
+Use Docker for backend-only local testing:
+
+* `docker compose up --build`
+* `docker compose logs -f`
+* `docker compose down`
 
 ---
 

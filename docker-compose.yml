@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "${HOST_PORT:-8787}:${PORT:-8787}"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AUTH_TOKEN_SECRET: ${AUTH_TOKEN_SECRET}
+      PORT: ${PORT:-8787}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/backend/node_modules
+      - /app/shared/node_modules
+    command: npm run -w backend dev
