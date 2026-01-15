@@ -1,0 +1,11 @@
+{
+  "name": "meet-ai-assistant",
+  "private": true,
+  "workspaces": ["extension", "backend", "shared"],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

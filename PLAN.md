@@ -22,6 +22,7 @@
 ---
 
 ## 🔹 PHASE 1 — Architecture & Repo Setup
+### ✅ Status: Completed
 
 ### Tech decisions (locked in)
 
@@ -43,6 +44,9 @@
     manifest.json
     tsconfig.json
   /backend
+    /api
+      answer.ts         # Vercel serverless API: POST /answer
+      install.ts        # Vercel serverless API: POST /install
     /src
       server.ts         # Fastify app
       routes/answer.ts
@@ -168,6 +172,10 @@ type AnswerResponse = {
 * Apply kid-safe rules
 * Keep prompts short
 * Return only text
+
+### Vercel-ready endpoints (serverless)
+
+For easiest deploy on Vercel, implement `/backend/api/answer.ts` and `/backend/api/install.ts` as serverless handlers that call shared logic in `/backend/src/*`.
 
 ### Authentication (install token)
 

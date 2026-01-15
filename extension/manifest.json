@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Meet AI Assistant",
+  "version": "0.0.1",
+  "description": "Detects questions in Google Meet captions and shows short answers.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://meet.google.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["dist/content.js"]
+    }
+  ],
+  "action": {
+    "default_title": "Meet AI Assistant"
+  }
+}
