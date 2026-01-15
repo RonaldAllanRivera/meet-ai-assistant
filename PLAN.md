@@ -95,6 +95,7 @@
 ---
 
 ## 🔹 PHASE 3 — Question Detection Logic
+### ✅ Status: Completed
 
 ### Goal
 
@@ -124,6 +125,7 @@ Let Cascade generate test cases for question detection logic.
 ---
 
 ## 🔹 PHASE 4 — Always-On Overlay UI (Kid-Friendly)
+### ✅ Status: Completed
 
 ### Requirements
 
@@ -148,6 +150,7 @@ Let Cascade generate test cases for question detection logic.
 ---
 
 ## 🔹 PHASE 5 — Backend API (Secure + Fast)
+### ✅ Status: Completed
 
 ### Core endpoint
 

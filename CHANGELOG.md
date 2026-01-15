@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Caption reader with MutationObserver and DOM fallback scanning
 - Caption normalization, dedupe, and rolling buffer
+- Question detection heuristics with cooldown and dedupe
+- Overlay UI for listening/question/answer states
+- Serverless API endpoints for install + answer with token auth
+- Basic safety filter, rate limiting, and OpenAI request wrapper
 
 ## [0.1.0] - 2026-01-15
 ### Added
