@@ -67,6 +67,7 @@
 ---
 
 ## 🔹 PHASE 2 — Chrome Extension Core (Captions Reader)
+### ✅ Status: Completed
 
 ### Key responsibilities
 

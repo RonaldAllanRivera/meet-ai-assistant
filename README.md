@@ -45,8 +45,8 @@ Google Meet captions
 - Install token required for API access
 
 ## Status
-- Phase 0–1 complete (constraints + scaffold)
-- Next: caption reader, question detection, safety layer, and UI overlay
+- Phase 0–2 complete (constraints, scaffold, caption reader)
+- Next: question detection, safety layer, and UI overlay
 
 ## Roadmap
 - Caption reader + MutationObserver
