@@ -38,29 +38,49 @@ Google Meet captions
 
 ## Deployment (Vercel)
 - Set **Root Directory** to `backend`
-- Add env vars for model API key + auth secret
+- Add env vars: `OPENAI_API_KEY`, `AUTH_TOKEN_SECRET`, `FAMILY_ACCESS_KEY`
+- Use a long random `FAMILY_ACCESS_KEY` to lock the backend to your family build
 - Optional: Upstash Redis for shared rate limiting
+
+## Do you need to publish on the Chrome Web Store?
+No. For family-only use, load it privately.
+
+1. Create `extension/config.json` (copy from `extension/config.example.json`).
+   - `apiBaseUrl`: `https://YOUR-VERCEL-URL.vercel.app/api` (or `http://localhost:8787`)
+   - `familyAccessKey`: must match `FAMILY_ACCESS_KEY`
+2. Build the extension:
+   ```bash
+   npx tsc -p extension/tsconfig.json
+   ```
+3. Open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and select the `extension` folder.
+4. Optional: click **Pack extension** to create a `.crx` for your child’s browser.
+
+Updates are manual (rebuild + reload). Never commit `extension/config.json`.
 
 ## API quick test (Postman / curl)
 
 ### curl
 ```bash
 # 1) Get install token
-curl -X POST https://YOUR-VERCEL-URL.vercel.app/api/install
+curl -X POST https://YOUR-VERCEL-URL.vercel.app/api/install \
+  -H "X-Family-Key: YOUR_FAMILY_ACCESS_KEY"
 
 # 2) Use token to request an answer
 curl -X POST https://YOUR-VERCEL-URL.vercel.app/api/answer \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_INSTALL_TOKEN" \
+  -H "X-Family-Key: YOUR_FAMILY_ACCESS_KEY" \
   -d '{"question":"What is a sentence?","context":["Today we are learning about sentences."]}'
 ```
 
 ### Postman
 1. **POST** `https://YOUR-VERCEL-URL.vercel.app/api/install`
+   - Header: `X-Family-Key: YOUR_FAMILY_ACCESS_KEY`
 2. Copy the `token` from the response
 3. **POST** `https://YOUR-VERCEL-URL.vercel.app/api/answer`
    - Headers: `Content-Type: application/json`
    - Headers: `Authorization: Bearer <token>`
+   - Headers: `X-Family-Key: YOUR_FAMILY_ACCESS_KEY`
    - Body (raw JSON):
      ```json
      {
@@ -76,6 +96,7 @@ curl -X POST https://YOUR-VERCEL-URL.vercel.app/api/answer \
    ```bash
    OPENAI_API_KEY=your_key
    AUTH_TOKEN_SECRET=your_secret
+   FAMILY_ACCESS_KEY=your_family_key
    ```
 2. Start the backend:
    ```bash
@@ -120,19 +141,23 @@ docker compose build --no-cache
 ### curl against local Fastify
 ```bash
 # 1) Get install token
-curl -X POST http://localhost:8787/install
+curl -X POST http://localhost:8787/install \
+  -H "X-Family-Key: YOUR_FAMILY_ACCESS_KEY"
 
 # 2) Use token to request an answer
 curl -X POST http://localhost:8787/answer \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_INSTALL_TOKEN" \
+  -H "X-Family-Key: YOUR_FAMILY_ACCESS_KEY" \
   -d '{"question":"What is a sentence?","context":["Today we are learning about sentences."]}'
 ```
 
 ## Security & privacy
 - Captions only (no audio capture)
-- No secrets shipped in the extension
+- No OpenAI keys shipped in the extension
+- Family access key required for backend access
 - Install token required for API access
+- Repo clones must deploy their own backend + OpenAI key
 
 ## Status
 - Phase 0–5 complete (constraints, scaffold, captions, question detection, overlay, backend)

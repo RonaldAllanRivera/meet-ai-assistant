@@ -194,6 +194,17 @@ Approach:
 * Extension includes the token in every `POST /answer` request
 * Backend rate limits per token and per IP
 
+### Private access gate (family key)
+
+Goal: Only your child's build can use your Vercel backend, even if the repo is public.
+
+Approach:
+
+* Set `FAMILY_ACCESS_KEY` in Vercel + local `.env`
+* Require `X-Family-Key` header on `/install` and `/answer`
+* Store the key only in `extension/config.json` (gitignored)
+* Provide `extension/config.example.json` for repo clones
+
 ### Framework
 
 * **Fastify + TypeScript**
@@ -266,6 +277,7 @@ Safety logic lives **before** the OpenAI call.
 ### One-time setup (adult)
 
 * Install extension
+* Load as unpacked or packed CRX (no Chrome Web Store needed)
 * Allow Meet permissions
 * Enable captions
 

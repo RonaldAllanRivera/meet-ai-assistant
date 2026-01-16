@@ -2,12 +2,16 @@ import { checkRateLimit } from "../src/rateLimit";
 import { evaluateSafety } from "../src/safety";
 import { requestAnswer } from "../src/openai";
 import { verifyInstallToken } from "../src/auth";
+import { FAMILY_KEY_HEADER_NAME, verifyFamilyKey } from "../src/familyKey";
 import type { AnswerRequest, AnswerResponse } from "../../shared/types";
 
 function setCors(res: any): void {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Install-Token");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    `Content-Type, Authorization, X-Install-Token, ${FAMILY_KEY_HEADER_NAME}`
+  );
 }
 
 function getToken(req: any): string | null {
@@ -54,6 +58,12 @@ export default async function handler(req: any, res: any): Promise<void> {
 
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  const familyKey = process.env.FAMILY_ACCESS_KEY;
+  if (!verifyFamilyKey(req.headers ?? {}, familyKey)) {
+    res.status(401).json({ error: "Unauthorized" });
     return;
   }
 

@@ -11,6 +11,12 @@
       "js": ["dist/content.js", "dist/overlay.js"]
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["config.json"],
+      "matches": ["https://meet.google.com/*"]
+    }
+  ],
   "action": {
     "default_title": "Meet AI Assistant"
   }

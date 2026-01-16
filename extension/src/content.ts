@@ -1,3 +1,4 @@
+import { requestAnswer } from "./api";
 import { isVisible, normalizeText } from "./utils";
 
 const DEBUG = false;
@@ -34,6 +35,8 @@ const state: CaptionState = {
   lastQuestionAt: 0,
   lastQuestion: ""
 };
+
+let latestRequestId = 0;
 
 function log(...args: unknown[]): void {
   if (!DEBUG) return;
@@ -138,6 +141,29 @@ function maybeDetectQuestion(line: string): void {
 
   log("Question detected:", payload);
   window.dispatchEvent(new CustomEvent("meet-assistant-question", { detail: payload }));
+  void handleQuestion(payload);
+}
+
+async function handleQuestion(payload: { question: string; context: string[] }): Promise<void> {
+  const requestId = ++latestRequestId;
+  try {
+    const response = await requestAnswer(payload.question, payload.context);
+    if (requestId !== latestRequestId) return;
+    const answer = response.answer?.trim() || "I'm not sure.";
+    window.dispatchEvent(
+      new CustomEvent("meet-assistant-answer", {
+        detail: { answer, blocked: response.blocked, reason: response.reason }
+      })
+    );
+  } catch (error) {
+    if (requestId !== latestRequestId) return;
+    log("Answer request failed:", error);
+    window.dispatchEvent(
+      new CustomEvent("meet-assistant-answer", {
+        detail: { answer: "I'm not sure.", blocked: true }
+      })
+    );
+  }
 }
 
 function isLikelyQuestion(line: string): boolean {

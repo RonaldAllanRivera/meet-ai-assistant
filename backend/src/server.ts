@@ -10,7 +10,13 @@ async function buildServer() {
 
   await app.register(cors, {
     origin: true,
-    methods: ["GET", "POST", "OPTIONS"]
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Install-Token",
+      "X-Family-Key"
+    ]
   });
 
   await registerInstallRoutes(app);

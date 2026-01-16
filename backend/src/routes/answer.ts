@@ -3,6 +3,7 @@ import { checkRateLimit } from "../rateLimit";
 import { evaluateSafety } from "../safety";
 import { requestAnswer } from "../openai";
 import { verifyInstallToken } from "../auth";
+import { verifyFamilyKey } from "../familyKey";
 import type { AnswerRequest, AnswerResponse } from "../../../shared/types";
 
 function getToken(request: FastifyRequest): string | null {
@@ -28,6 +29,12 @@ export async function registerAnswerRoutes(fastify: FastifyInstance): Promise<vo
       request: FastifyRequest<{ Body: AnswerRequest }>,
       reply: FastifyReply
     ) => {
+      const familyKey = process.env.FAMILY_ACCESS_KEY;
+      if (!verifyFamilyKey(request.headers as Record<string, unknown>, familyKey)) {
+        reply.code(401).send({ error: "Unauthorized" });
+        return;
+      }
+
       const token = getToken(request);
       const secret = process.env.AUTH_TOKEN_SECRET;
       if (!secret || !token || !verifyInstallToken(token, secret)) {
